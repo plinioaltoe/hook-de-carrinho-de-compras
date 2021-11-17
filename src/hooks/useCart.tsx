@@ -35,6 +35,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const addProduct = async (productId: number) => {
     try {
       // TODO
+      console.log("chamei add")
     } catch {
       // TODO
     }
@@ -43,6 +44,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const removeProduct = (productId: number) => {
     try {
       // TODO
+      console.log("chamei rem")
     } catch {
       // TODO
     }
@@ -54,6 +56,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   }: UpdateProductAmount) => {
     try {
       // TODO
+      console.log("chamei update")
     } catch {
       // TODO
     }
