@@ -23,28 +23,53 @@ const CartContext = createContext<CartContextData>({} as CartContextData);
 
 export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const [cart, setCart] = useState<Product[]>(() => {
-    // const storagedCart = Buscar dados do localStorage
+    const storagedCart = localStorage.getItem('@RocketShoes:cart');
 
-    // if (storagedCart) {
-    //   return JSON.parse(storagedCart);
-    // }
+    if (storagedCart) {
+      return JSON.parse(storagedCart);
+    }
 
     return [];
   });
 
+  const isOutOfStock = async (productId: number, amount: number): Promise<boolean> => {
+    const { data } = await api.get('stock')
+    const product = data.find(({ id }: Product) => id === productId)
+    return product.amount < amount
+  }
+
+  const addNewProduct = async (productId: number) => {
+
+    if (await isOutOfStock(productId, 1))
+      throw new Error('Quantidade solicitada fora de estoque')
+
+    const { data } = await api.get('products')
+    const product = data.find(({ id }: Product) => id === productId)
+    product.amount = 1
+    console.log('Novo', cart, product)
+    setCart([...cart, product])
+  }
+
   const addProduct = async (productId: number) => {
     try {
-      // TODO
-      console.log("chamei add")
-    } catch {
+      const productIdx = cart.findIndex(({ id }: Product) => id === productId)
+      const isNewProduct = productIdx < 0
+      if (isNewProduct) {
+        addNewProduct(productId)
+      } else {
+        updateProductAmount({ productId, amount: 1 })
+      }
+    } catch (e) {
+      console.log(e)
       // TODO
     }
   };
 
   const removeProduct = (productId: number) => {
     try {
-      // TODO
-      console.log("chamei rem")
+      const newCart = cart.filter(({ id }: Product) => id !== productId)
+      setCart([...newCart])
+      console.log("chamei rem", newCart)
     } catch {
       // TODO
     }
@@ -55,10 +80,19 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      if (await isOutOfStock(productId, 1))
+        throw new Error('Quantidade solicitada fora de estoque')
+
+      const productIdx = cart.findIndex(({ id }: Product) => id === productId)
+      console.log(productIdx)
+      if (productIdx >= 0) {
+        cart[productIdx].amount += amount
+        console.log('Novo', cart, productIdx)
+        setCart([...cart])
+      }
       console.log("chamei update")
-    } catch {
-      // TODO
+    } catch (e) {
+      console.log(e)
     }
   };
 
