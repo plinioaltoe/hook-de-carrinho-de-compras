@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MdAddShoppingCart } from 'react-icons/md';
 
 import { ProductList } from './styles';
@@ -30,7 +30,6 @@ const Home = (): JSX.Element => {
     return sumAmount
   }, {} as CartItemsAmount)
 
-  console.log("total", cartItemsAmount)
 
   useEffect(() => {
     async function loadProducts() {
